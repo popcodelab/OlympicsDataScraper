@@ -1,6 +1,7 @@
 import requests
 import mimetypes
 
+
 def _get_content_type(content_type):
     # Parse content type to get the subtype
     main_type, subtype = content_type.split('/')
