@@ -68,7 +68,7 @@ if len(arguments) > 0:
             print("Display result list : ")
             for data_line in data_lines:
                 if "NO POSTER" in data_line:
-                    print(Color.WARNING + "NO POSTER" + Color.ENDC)
+                    print(Color.WARNING + f"{data_line}" + Color.ENDC)
                 else:
                     print(data_line)
         else:
