@@ -10,6 +10,7 @@ __pycache__/
 .Python
 /venv/
 /flag_images/
+sports/
 .idea/
 env/
 build/

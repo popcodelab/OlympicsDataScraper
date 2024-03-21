@@ -1,30 +1,32 @@
 from bs4 import BeautifulSoup
 import os
 import urllib.request
+
+from color import Color
 from file_helper import get_file_extension_from_content_type
 
 
 def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, int, int, int, int]]:
     # Retrieves all lines containing data
     global gold_medals_count, silver_medals_count, bronze_medals_count, country, flag_src, img_name, img_filename
-    div_lines = soup.find_all('div', class_='line')
-    print(f"{len(div_lines) - 1} line(s) found")
-    if len(div_lines) > 0:
+    div_elements = soup.find_all('div', class_='line')
+    print(f"{len(div_elements) - 1} line(s) found")
+    if len(div_elements) > 0:
         # Directory to store downloaded flag images
         download_dir = 'flag_images'
         if not os.path.exists(download_dir):
             os.makedirs(download_dir)
         cpt = 1
         result: list[tuple[str, str, str, int, int, int, int]] = []
-        for div_line in div_lines:
+        for div_line in div_elements:
             if div_line is None:
-                print("No next line, end of treatment")
+                print(Color.WARNING, "No next line, end of treatment"+Color.ENDC)
                 break
             # Index is only used for logging
             try:
                 index = div_line.findNext('div').get('data-row-id').replace("country-medal-row-","")
             except AttributeError as attr_ex:
-                print("End of treatment, there is no more row : ", attr_ex.args)
+                print(Color.WARNING,f"End of treatment, there is no more row : {attr_ex.args}" + Color.ENDC)
                 break
             print(f"treatment of line number :{index}")
             flag_img = div_line.findNext("img")
@@ -36,17 +38,17 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                 # File extension has been found
                 if file_extension != "file_extension_not_found":
                     img_filename = img_name + file_extension
+                    # Download the image
                     print(f"Downloading : {img_filename}")
                     img_path = os.path.join(download_dir, img_filename)
-                    # Download the image
                     try:
                         urllib.request.urlretrieve(flag_src, img_path)
-                        print(f"Downloaded: {img_filename}")
+                        print(Color.OKGREEN, f"Downloaded: {img_filename}" + Color.ENDC)
                     except IOError as io_ex:
-                        print(f"Could not download: {img_filename} : ", io_ex)
+                        print(Color.WARNING, f"Could not download: {img_filename} : {io_ex}" + Color.ENDC)
                         continue
                 else:
-                    print(f"Cannot retrieve the file extension within content type !")
+                    print(Color.WARNING, "Cannot retrieve the file extension within content type !" + Color.ENDC)
                     continue
             else:
                 print("Flag image not found !")
@@ -56,7 +58,7 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
             if div_line:
                 tri_letter_code = div_line.findNext('div', attrs={'data-cy': 'tri-letter-code'}).text
             else:
-                print("No tri-letter code found")
+                print(Color.WARNING, "No tri-letter code found" + Color.ENDC)
                 continue
             div_line = div_line.find_next_sibling()
             if div_line:
@@ -67,11 +69,11 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                         gold_medals_count = '0'
                 except AttributeError as attr_ex:
                     if gold_medals_count is None:
-                        print("No gold medal found : ", attr_ex)
+                        print(Color.WARNING, f"No gold medal found : {attr_ex}" + Color.ENDC)
                         continue
 
             else:
-                print("No gold medal found")
+                print(Color.WARNING, "No gold medal found" + Color.ENDC)
                 continue
             div_line = div_line.find_next_sibling()
             if div_line:
@@ -82,10 +84,10 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                         silver_medals_count = '0'
                 except AttributeError as attr_ex:
                     if silver_medals_count is None:
-                        print("No silver medal found : ", attr_ex)
+                        print(Color.WARNING, f"No silver medal found : {attr_ex}"+ Color.ENDC)
                         continue
             else:
-                print("No silver medal found")
+                print(Color.WARNING, "No silver medal found"+ Color.ENDC)
                 continue
             div_line = div_line.find_next_sibling()
             if div_line:
@@ -96,18 +98,18 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                         bronze_medals_count = '0'
                 except AttributeError as attr_ex:
                     if bronze_medals_count is None:
-                        print("No bronze medal found : ", attr_ex)
+                        print(Color.WARNING, f"No bronze medal found : {attr_ex}"+ Color.ENDC)
                         continue
             else:
-                print("No bronze medal found")
+                print(Color.WARNING, "No bronze medal found"+ Color.ENDC)
                 continue
             str_total = f"{gold_medals_count} + {silver_medals_count} + {bronze_medals_count}"
             try:
                 total_medals = eval(str_total)
             except Exception as e:
-                print("An error occurred calculating the total medals number !", e)
+                print(Color.WARNING, "An error occurred calculating the total medals number !" +Color.ENDC, e)
                 continue
-            cpt = cpt + 1
+            cpt +=1
             print(f"{country} , "
                   f"{tri_letter_code} , "
                   f"{flag_src} , "
@@ -120,10 +122,10 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
             result.append((tri_letter_code, country, img_filename, int(gold_medals_count), int(silver_medals_count),
                            int(bronze_medals_count), int(eval(str_total))))
 
-        print(f"{cpt - 1} retrieved out of {len(div_lines) - 1} lines")
+        print(f"{cpt - 1} retrieved out of {len(div_elements) - 1} lines")
         return result
     else:
-        print("Cannot retrieve the information .. no lines found !")
+        print(Color.FAIL, "Cannot retrieve the information .. no lines found !" + Color.ENDC)
 
 
 
