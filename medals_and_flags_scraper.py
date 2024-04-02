@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import os
 import urllib.request
+import json
 
 from color import Color
 from file_helper import get_file_extension_from_content_type
@@ -8,7 +9,9 @@ from file_helper import get_file_extension_from_content_type
 
 def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, int, int, int, int]]:
     # Retrieves all lines containing data
-    global gold_medals_count, silver_medals_count, bronze_medals_count, country, flag_src, img_name, img_filename
+    gold_medals_count = 0
+    silver_medals_count = 0
+    bronze_medals_count = 0
     div_elements = soup.find_all('div', class_='line')
     print(f"{len(div_elements) - 1} line(s) found")
     if len(div_elements) > 0:
@@ -20,13 +23,13 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
         result: list[tuple[str, str, str, int, int, int, int]] = []
         for div_line in div_elements:
             if div_line is None:
-                print(Color.WARNING, "No next line, end of treatment"+Color.ENDC)
+                print(Color.WARNING, "No next line, end of treatment" + Color.ENDC)
                 break
             # Index is only used for logging
             try:
-                index = div_line.findNext('div').get('data-row-id').replace("country-medal-row-","")
+                index = div_line.findNext('div').get('data-row-id').replace("country-medal-row-", "")
             except AttributeError as attr_ex:
-                print(Color.WARNING,f"End of treatment, there is no more row : {attr_ex.args}" + Color.ENDC)
+                print(Color.WARNING, f"End of treatment, there is no more row : {attr_ex.args}" + Color.ENDC)
                 break
             print(f"treatment of line number :{index}")
             flag_img = div_line.findNext("img")
@@ -84,10 +87,10 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                         silver_medals_count = '0'
                 except AttributeError as attr_ex:
                     if silver_medals_count is None:
-                        print(Color.WARNING, f"No silver medal found : {attr_ex}"+ Color.ENDC)
+                        print(Color.WARNING, f"No silver medal found : {attr_ex}" + Color.ENDC)
                         continue
             else:
-                print(Color.WARNING, "No silver medal found"+ Color.ENDC)
+                print(Color.WARNING, "No silver medal found" + Color.ENDC)
                 continue
             div_line = div_line.find_next_sibling()
             if div_line:
@@ -98,18 +101,18 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
                         bronze_medals_count = '0'
                 except AttributeError as attr_ex:
                     if bronze_medals_count is None:
-                        print(Color.WARNING, f"No bronze medal found : {attr_ex}"+ Color.ENDC)
+                        print(Color.WARNING, f"No bronze medal found : {attr_ex}" + Color.ENDC)
                         continue
             else:
-                print(Color.WARNING, "No bronze medal found"+ Color.ENDC)
+                print(Color.WARNING, "No bronze medal found" + Color.ENDC)
                 continue
             str_total = f"{gold_medals_count} + {silver_medals_count} + {bronze_medals_count}"
             try:
                 total_medals = eval(str_total)
             except Exception as e:
-                print(Color.WARNING, "An error occurred calculating the total medals number !" +Color.ENDC, e)
+                print(Color.WARNING, "An error occurred calculating the total medals number !" + Color.ENDC, e)
                 continue
-            cpt +=1
+            cpt += 1
             print(f"{country} , "
                   f"{tri_letter_code} , "
                   f"{flag_src} , "
@@ -122,10 +125,16 @@ def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, in
             result.append((tri_letter_code, country, img_filename, int(gold_medals_count), int(silver_medals_count),
                            int(bronze_medals_count), int(eval(str_total))))
 
+            try:
+                # Write results to JSON file
+                with open('medals-and-flags.json', 'w') as f:
+                    json.dump(result, f)
+
+                print(Color.OKGREEN, "Results written to sports.json" + Color.ENDC)
+            except Exception as e:
+                print(Color.FAIL, "An error occurred while writing to medals-and-flags.json ! " + Color.ENDC, e)
+
         print(f"{cpt - 1} retrieved out of {len(div_elements) - 1} lines")
         return result
     else:
         print(Color.FAIL, "Cannot retrieve the information .. no lines found !" + Color.ENDC)
-
-
-

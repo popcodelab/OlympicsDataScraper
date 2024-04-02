@@ -7,7 +7,6 @@ from file_helper import image_download, get_file_extension_from_content_type
 
 
 def retrieve_sport_poster(sport_infos_url, sport_code:str) -> str:
-    global image_filename
     print(f"Scraping sport {sport_code} infos from {sport_infos_url} ...")
     # Define headers with a user-agent
     headers = {

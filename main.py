@@ -21,7 +21,7 @@ if len(arguments) > 0:
     if arguments[0] == "medals":
         print("scraping medals...")
         driver = webdriver.Firefox(options=options)
-        #driver.minimize_window()
+        # driver.minimize_window()
         # URL of the page containing flag images
         url = "https://olympics.com/en/olympic-games/tokyo-2020/medals"
         print("access to : " + url)
@@ -47,7 +47,7 @@ if len(arguments) > 0:
     elif arguments[0] == "sports":
         print("scraping sports...")
         driver = webdriver.Firefox(options=options)
-        #driver.minimize_window()
+        # driver.minimize_window()
         # URL of the page containing sports information
         url = "https://olympics.com/en/sports/summer-olympics#tokyo-2020"
         print("access to : " + url)
@@ -77,10 +77,3 @@ if len(arguments) > 0:
         print(Color.WARNING, "Wrong arguments" + Color.ENDC)
 else:
     print("No arguments ! you should specify either : 'medals' either 'sports' as arguments")
-
-
-
-
-
-
-

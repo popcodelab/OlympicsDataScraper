@@ -33,19 +33,19 @@ def get_file_extension_from_content_type(content_url):
             print("File Extension:", file_extension)
             return file_extension
         else:
-            print(Color.WARNING,"Content-Type header not found."+Color.ENDC)
+            print(Color.WARNING, "Content-Type header not found." + Color.ENDC)
             return "file_extension_not_found"
     else:
-        print(Color.FAIL, "Failed to retrieve the file extension."+Color.ENDC)
+        print(Color.FAIL, "Failed to retrieve the file extension." + Color.ENDC)
         return "FILE_EXTENSION_NOT_FOUND"
 
 
-def image_download(image_url:str, download_path:str, image_filename) -> bool:
+def image_download(image_url: str, download_path: str, image_filename: str) -> bool:
     try:
-        #headers = {"User-Agent": "Mozilla/5.0"}
         # Define headers with a user-agent
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/58.0.3029.110 Safari/537.3'
         }
         # Send a GET request to the URL
         response = requests.get(image_url, headers=headers, verify=True)
@@ -55,12 +55,12 @@ def image_download(image_url:str, download_path:str, image_filename) -> bool:
             with open(download_path, "wb") as f:
                 # Write the content of the response to the file
                 f.write(response.content)
-            print(Color.OKGREEN, f"Image {download_path} downloaded successfully."+Color.ENDC)
+            print(Color.OKGREEN, f"Image {download_path} downloaded successfully." + Color.ENDC)
         else:
-            print(Color.WARNING, f"Failed to download image. Status code: {response.status_code}"+Color.ENDC)
+            print(Color.WARNING, f"Failed to download image. Status code: {response.status_code}" + Color.ENDC)
 
         print(f"Downloaded: {image_filename}")
         return True
     except IOError as io_ex:
-        print(Color.FAIL,f"Could not download: {image_filename} : {io_ex}"+Color.ENDC)
+        print(Color.FAIL, f"Could not download: {image_filename} : {io_ex}" + Color.ENDC)
         return False
