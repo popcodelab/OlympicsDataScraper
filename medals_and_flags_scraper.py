@@ -6,7 +6,7 @@ import json
 from color import Color
 from file_helper import get_file_extension_from_content_type
 
-
+# Module used to gather medal count per country and the country flags
 def scrape_medals_and_flags(soup: BeautifulSoup) -> list[tuple[str, str, str, int, int, int, int]]:
     # Retrieves all lines containing data
     gold_medals_count = 0

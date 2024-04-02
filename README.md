@@ -4,6 +4,9 @@
 
 Scrap Tokyo Olympic Games 2020 to build a list of tuples to be used in the [MaterialTablePOC](https://github.com/popcodelab/MaterialTablePOC) Angular application.
 
+- Gathers sport names
+- Medal count per country and country flags
+
 These files are used as mock data.
 
 It generates JSON files as well : sports.json and medals-and-flags.json

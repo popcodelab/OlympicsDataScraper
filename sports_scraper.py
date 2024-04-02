@@ -6,7 +6,7 @@ from color import Color
 from file_helper import image_download
 from sport_poster_scraper import retrieve_sport_poster
 
-
+# Module to scrap all sport names
 def scrape_sports(soup: BeautifulSoup) -> list[tuple[str, str, str]]:
     li_elements = soup.find_all('li', class_='b2p-sports-wrapper__item')
     print(f"{len(li_elements) - 1} line(s) found")
